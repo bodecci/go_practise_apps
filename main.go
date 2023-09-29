@@ -6,7 +6,7 @@ import (
 )
 
 func handlerFunc(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/plain; charset=utl-8")
 	fmt.Fprint(w, "<h1>Welcome to my Awesome site!</h1>")
 }
 
