@@ -1,0 +1,25 @@
+# Go binaries and executables
+*.exe
+*.out
+*.app
+
+# Go build and test cache
+*.test
+*.prof
+caches/
+
+# Compiled Go files
+*.a
+*.o
+
+# Dependency directories
+vendor/
+go.sum
+
+# IDE-specific directories and files (VSCode)
+.vscode/
+*.code-workspace
+
+# Log files and binaries created by tests
+*.log
+test-output/
