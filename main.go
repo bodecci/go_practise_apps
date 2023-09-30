@@ -11,7 +11,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func pathHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, r.URL.Path)
+	switch r.URL.Path {
+	case "/":
+		homeHandler(w, r)
+	case "/contact":
+		contactHanlder(w, r)
+	default:
+		// TODO hanlde the page not found
+	}
+	// fmt.Fprint(w, r.URL.Path)
 }
 
 func contactHanlder(w http.ResponseWriter, r *http.Request) {
