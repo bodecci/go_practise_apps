@@ -21,7 +21,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = tpl.Execute(w, nil)
 	if err != nil {
-		panic(err) // TODO remove panic
+		log.Printf("executing template: %v", err)
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		return
 	}
 }
 
