@@ -2,35 +2,25 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 	"time"
 
+	"github.com/bodecci/go_dev/controllers"
+	"github.com/bodecci/go_dev/view"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 func executeTemplate(w http.ResponseWriter, filePath string) {
-	w.Header().Set("Content-Type", "text/html; charset=utl-8")
-	tpl, err := template.ParseFiles(filePath)
+	t, err := view.Parse(filePath)
 	if err != nil {
 		log.Printf("parsing template: %v", err)
 		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		log.Printf("executing template: %v", err)
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		return
-	}
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tplPath)
+	t.Execute(w, nil)
 }
 
 func contactHanlder(w http.ResponseWriter, r *http.Request) {
@@ -48,13 +38,17 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Timeout(60 * time.Second))
 
+	tpl := view.Must(view.Parse(filepath.Join("templates", "home.gohtml")))
+	r.Get("/", controllers.StaticHandler(tpl))
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
 	// processing should be stopped.
-	r.Use(middleware.Timeout(60 * time.Second))
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHanlder)
+
+	tpl = view.Must(view.Parse(filepath.Join("templates", "contacts.gohtml")))
+	// if the templates don't parse, then panic is good here
+	r.Get("/contact", controllers.StaticHandler(tpl))
 	r.Get("/faq", faqHandler)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
